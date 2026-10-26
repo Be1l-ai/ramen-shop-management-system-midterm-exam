@@ -1,42 +1,71 @@
-<?php require_once '../config/database.php'; ?>
-<?php require_once '../models.php'; ?>
+<?php 
+require_once '../config/database.php';
+require_once '../models.php';
+require_once '../auth.php';
+
+$user = requireAuth($pdo);
+
+$id = $_GET['id'] ?? null;
+if (!$id) { die('Item ID required'); }
+
+$item = getMenuItemByID($pdo, $id);
+if (!$item) { die('Menu item not found'); }
+
+if (!canManageShop($pdo, $item['shop_id'])) {
+    header("Location: ../index.php");
+    exit;
+}
+
+$errorMessages = [
+    'update_failed' => 'The menu item could not be updated. Please try again.'
+];
+$error = isset($_GET['error']) && isset($errorMessages[$_GET['error']]) ? $errorMessages[$_GET['error']] : null;
+
+$navBase = '../';
+$navActive = 'dashboard';
+$navUser = $user;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Edit Menu Item</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Menu Item</title>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
-	<?php $id = $_GET['id'] ?? null; ?>
-	<?php if (!$id) { die('Item ID required'); } ?>
-	
-	<?php $item = getMenuItemByID($pdo, $id); ?>
-	<?php if (!$item) { die('Menu item not found'); } ?>
-	
-	<h1>Edit Menu Item</h1>
-	
-	<form action="../handleForms.php?id=<?php echo $id; ?>" method="POST">
-		<p>
-			<label>Name: <input type="text" name="name" value="<?php echo $item['name']; ?>" required></label>
-		</p>
-		<p>
-			<label>Description:<br>
-			<textarea name="description" rows="3" cols="50"><?php echo $item['description']; ?></textarea>
-			</label>
-		</p>
-		<p>
-			<label>Price: <input type="number" name="price" step="0.01" min="0" value="<?php echo $item['price']; ?>" required></label>
-		</p>
-		<p>
-			<label>
-				<input type="checkbox" name="is_available" value="1" <?php if ($item['is_available']) echo 'checked'; ?>> Available
-			</label>
-		</p>
-		<p>
-			<input type="submit" name="updateMenuItemBtn" value="Update Menu Item">
-			<a href="../index.php">Cancel</a>
-		</p>
-	</form>
+    <?php include __DIR__ . '/../partials/nav.php'; ?>
+    
+    <div class="container" style="max-width: 600px;">
+        <h1>Edit Menu Item</h1>
+        
+        <?php if ($error): ?>
+            <p class="error"><?php echo $error; ?></p>
+        <?php endif; ?>
+        
+        <form action="../handleForms.php?id=<?php echo $id; ?>" method="POST">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" value="<?php echo $item['name']; ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="3" cols="50"><?php echo $item['description']; ?></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" step="0.01" min="0" value="<?php echo $item['price']; ?>" required>
+            </div>
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="is_available" value="1" <?php if ($item['is_available']) echo 'checked'; ?>> Available
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" name="updateMenuItemBtn" value="Update Menu Item" class="btn">
+                <a href="../index.php?shop_id=<?php echo $item['shop_id']; ?>" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
