@@ -10,7 +10,7 @@ $item = getMenuItemByID($pdo, $id);
 if (!$item) { die('Menu item not found'); }
 
 if (!canManageShop($pdo, $item['shop_id'])) {
-    header("Location: ../index.php");
+    header("Location: " . BASE_URL . "index.php");
     exit;
 }
 

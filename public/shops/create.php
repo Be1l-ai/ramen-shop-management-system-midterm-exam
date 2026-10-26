@@ -5,10 +5,10 @@ $user = requireAuth($pdo);
 
 if (!canCreateShop($pdo)) {
     if ($user['role'] === 'shop_owner' && !empty($user['shop_id'])) {
-        header("Location: ../index.php?error=shop_limit");
+        header("Location: " . BASE_URL . "index.php?error=shop_limit");
     }
     else {
-        header("Location: ../index.php?error=forbidden");
+        header("Location: " . BASE_URL . "index.php?error=forbidden");
     }
     exit;
 }

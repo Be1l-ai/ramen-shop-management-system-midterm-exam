@@ -10,7 +10,7 @@ $shop = getRamenShopByID($pdo, $id);
 if (!$shop) { die('Shop not found'); }
 
 if (!canManageShop($pdo, $shop['id'])) {
-    header("Location: ../index.php");
+    header("Location: " . BASE_URL . "index.php");
     exit;
 }
 

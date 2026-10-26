@@ -4,7 +4,7 @@ require_once __DIR__ . '/../src/bootstrap.php';
 startSession();
 
 if (isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    header("Location: " . BASE_URL . "index.php");
     exit;
 }
 

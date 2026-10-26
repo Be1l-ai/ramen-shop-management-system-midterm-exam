@@ -6,14 +6,14 @@ require_once __DIR__ . '/../src/bootstrap.php';
 if (isset($_POST['loginBtn'])) {
 	$result = attemptLogin($pdo, $_POST['username'] ?? '', $_POST['password'] ?? '');
 	if ($result['status'] === 'success') {
-		header("Location: index.php");
+		header("Location: " . BASE_URL . "index.php");
 		exit;
 	}
 	if ($result['status'] === 'inactive') {
-		header("Location: login.php?error=inactive");
+		header("Location: " . BASE_URL . "login.php?error=inactive");
 		exit;
 	}
-	header("Location: login.php?error=invalid");
+	header("Location: " . BASE_URL . "login.php?error=invalid");
 	exit;
 }
 
@@ -24,23 +24,23 @@ if (isset($_POST['publicRegisterBtn'])) {
 	$confirmPassword = $_POST['confirm_password'] ?? '';
 
 	if ($username === '' || $email === '' || $password === '') {
-		header("Location: register.php?error=missing");
+		header("Location: " . BASE_URL . "register.php?error=missing");
 		exit;
 	}
 	if ($password !== $confirmPassword) {
-		header("Location: register.php?error=password_mismatch");
+		header("Location: " . BASE_URL . "register.php?error=password_mismatch");
 		exit;
 	}
 	if (strlen($password) < 6) {
-		header("Location: register.php?error=password_short");
+		header("Location: " . BASE_URL . "register.php?error=password_short");
 		exit;
 	}
 	if (getUserByUsername($pdo, $username)) {
-		header("Location: register.php?error=username_exists");
+		header("Location: " . BASE_URL . "register.php?error=username_exists");
 		exit;
 	}
 	if (getUserByEmail($pdo, $email)) {
-		header("Location: register.php?error=email_exists");
+		header("Location: " . BASE_URL . "register.php?error=email_exists");
 		exit;
 	}
 
@@ -52,10 +52,10 @@ if (isset($_POST['publicRegisterBtn'])) {
 	}
 
 	if ($newUserId) {
-		header("Location: register.php?success=1");
+		header("Location: " . BASE_URL . "register.php?success=1");
 		exit;
 	}
-	header("Location: register.php?error=registration_failed");
+	header("Location: " . BASE_URL . "register.php?error=registration_failed");
 	exit;
 }
 
@@ -66,10 +66,10 @@ $userId = $user['id'];
 if (isset($_POST['insertShopBtn'])) {
 	if (!canCreateShop($pdo)) {
 		if ($user['role'] === 'shop_owner' && !empty($user['shop_id'])) {
-			header("Location: index.php?error=shop_limit");
+			header("Location: " . BASE_URL . "index.php?error=shop_limit");
 		}
 		else {
-			header("Location: index.php?error=forbidden");
+			header("Location: " . BASE_URL . "index.php?error=forbidden");
 		}
 		exit;
 	}
@@ -78,7 +78,7 @@ if (isset($_POST['insertShopBtn'])) {
 	$description = trim($_POST['description'] ?? '');
 
 	if ($name === '') {
-		header("Location: shops/create.php?error=name_required");
+		header("Location: " . BASE_URL . "shops/create.php?error=name_required");
 		exit;
 	}
 
@@ -94,10 +94,10 @@ if (isset($_POST['insertShopBtn'])) {
 			'name' => $name,
 			'description' => $description
 		]);
-		header("Location: index.php?shop_id=" . $shopId);
+		header("Location: " . BASE_URL . "index.php?shop_id=" . $shopId);
 		exit;
 	}
-	header("Location: shops/create.php?error=create_failed");
+	header("Location: " . BASE_URL . "shops/create.php?error=create_failed");
 	exit;
 }
 
@@ -106,13 +106,13 @@ if (isset($_POST['updateShopBtn'])) {
 	$shop = getRamenShopByID($pdo, $id);
 	
 	if (!$shop || !canManageShop($pdo, $shop['id'])) {
-		header("Location: index.php?error=forbidden");
+		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
 	$name = trim($_POST['name'] ?? '');
 	if ($name === '') {
-		header("Location: shops/edit.php?id=" . urlencode($id) . "&error=name_required");
+		header("Location: " . BASE_URL . "shops/edit.php?id=" . urlencode($id) . "&error=name_required");
 		exit;
 	}
 	
@@ -124,10 +124,10 @@ if (isset($_POST['updateShopBtn'])) {
 			'name' => $name,
 			'description' => $_POST['description'] ?? ''
 		]);
-		header("Location: index.php?shop_id=" . $id);
+		header("Location: " . BASE_URL . "index.php?shop_id=" . $id);
 		exit;
 	}
-	header("Location: shops/edit.php?id=" . urlencode($id) . "&error=update_failed");
+	header("Location: " . BASE_URL . "shops/edit.php?id=" . urlencode($id) . "&error=update_failed");
 	exit;
 }
 
@@ -136,7 +136,7 @@ if (isset($_POST['deleteShopBtn'])) {
 	$shop = getRamenShopByID($pdo, $id);
 	
 	if (!$shop || !canManageShop($pdo, $shop['id'])) {
-		header("Location: index.php?error=forbidden");
+		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
@@ -145,10 +145,10 @@ if (isset($_POST['deleteShopBtn'])) {
 	
 	if ($query) {
 		logAudit($pdo, $userId, 'delete', 'ramen_shops', $id, $oldValues, null);
-		header("Location: index.php");
+		header("Location: " . BASE_URL . "index.php");
 		exit;
 	}
-	header("Location: index.php?error=delete_failed");
+	header("Location: " . BASE_URL . "index.php?error=delete_failed");
 	exit;
 }
 
@@ -157,7 +157,7 @@ if (isset($_POST['insertMenuItemBtn'])) {
 	$shop = getRamenShopByID($pdo, $shopId);
 	
 	if (!$shop || !canManageShop($pdo, $shopId)) {
-		header("Location: index.php?error=forbidden");
+		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
@@ -172,10 +172,10 @@ if (isset($_POST['insertMenuItemBtn'])) {
 			'price' => $_POST['price'] ?? 0,
 			'is_available' => $is_available
 		]);
-		header("Location: index.php?shop_id=" . $shopId);
+		header("Location: " . BASE_URL . "index.php?shop_id=" . $shopId);
 		exit;
 	}
-	header("Location: menu/create.php?shop_id=" . urlencode($shopId) . "&error=create_failed");
+	header("Location: " . BASE_URL . "menu/create.php?shop_id=" . urlencode($shopId) . "&error=create_failed");
 	exit;
 }
 
@@ -184,7 +184,7 @@ if (isset($_POST['updateMenuItemBtn'])) {
 	$item = getMenuItemByID($pdo, $id);
 	
 	if (!$item || !canManageShop($pdo, $item['shop_id'])) {
-		header("Location: index.php?error=forbidden");
+		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
@@ -204,10 +204,10 @@ if (isset($_POST['updateMenuItemBtn'])) {
 			'price' => $_POST['price'] ?? 0,
 			'is_available' => $is_available
 		]);
-		header("Location: index.php?shop_id=" . $item['shop_id']);
+		header("Location: " . BASE_URL . "index.php?shop_id=" . $item['shop_id']);
 		exit;
 	}
-	header("Location: menu/edit.php?id=" . urlencode($id) . "&error=update_failed");
+	header("Location: " . BASE_URL . "menu/edit.php?id=" . urlencode($id) . "&error=update_failed");
 	exit;
 }
 
@@ -216,7 +216,7 @@ if (isset($_POST['deleteMenuItemBtn'])) {
 	$item = getMenuItemByID($pdo, $id);
 	
 	if (!$item || !canManageShop($pdo, $item['shop_id'])) {
-		header("Location: index.php?error=forbidden");
+		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
@@ -230,16 +230,16 @@ if (isset($_POST['deleteMenuItemBtn'])) {
 	
 	if ($query) {
 		logAudit($pdo, $userId, 'delete', 'menu_items', $id, $oldValues, null);
-		header("Location: index.php?shop_id=" . $item['shop_id']);
+		header("Location: " . BASE_URL . "index.php?shop_id=" . $item['shop_id']);
 		exit;
 	}
-	header("Location: index.php?error=menu_delete_failed");
+	header("Location: " . BASE_URL . "index.php?error=menu_delete_failed");
 	exit;
 }
 
 if (isset($_POST['restoreShopBtn'])) {
 	if (!isAdmin($pdo)) {
-		header("Location: index.php?error=forbidden");
+		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
@@ -251,16 +251,16 @@ if (isset($_POST['restoreShopBtn'])) {
 			'name' => $shop['name'],
 			'description' => $shop['description']
 		]);
-		header("Location: shops/trash.php");
+		header("Location: " . BASE_URL . "shops/trash.php");
 		exit;
 	}
-	header("Location: shops/trash.php?error=restore_failed");
+	header("Location: " . BASE_URL . "shops/trash.php?error=restore_failed");
 	exit;
 }
 
 if (isset($_POST['restoreMenuItemBtn'])) {
 	if (!isAdmin($pdo)) {
-		header("Location: index.php?error=forbidden");
+		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
@@ -274,16 +274,16 @@ if (isset($_POST['restoreMenuItemBtn'])) {
 			'price' => $item['price'],
 			'is_available' => $item['is_available']
 		]);
-		header("Location: menu/trash.php?shop_id=" . $item['shop_id']);
+		header("Location: " . BASE_URL . "menu/trash.php?shop_id=" . $item['shop_id']);
 		exit;
 	}
-	header("Location: menu/trash.php?error=restore_failed");
+	header("Location: " . BASE_URL . "menu/trash.php?error=restore_failed");
 	exit;
 }
 
 if (isset($_POST['createUserBtn'])) {
 	if (!isAdmin($pdo)) {
-		header("Location: index.php?error=forbidden");
+		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
@@ -295,31 +295,31 @@ if (isset($_POST['createUserBtn'])) {
 	$shopId = !empty($_POST['shop_id']) ? (int)$_POST['shop_id'] : null;
 	
 	if (!in_array($role, ['admin', 'shop_owner', 'staff'], true)) {
-		header("Location: users/create.php?error=invalid_role");
+		header("Location: " . BASE_URL . "users/create.php?error=invalid_role");
 		exit;
 	}
 	if ($username === '' || $email === '' || $password === '') {
-		header("Location: users/create.php?error=missing");
+		header("Location: " . BASE_URL . "users/create.php?error=missing");
 		exit;
 	}
 	if ($password !== $confirmPassword) {
-		header("Location: users/create.php?error=password_mismatch");
+		header("Location: " . BASE_URL . "users/create.php?error=password_mismatch");
 		exit;
 	}
 	if (strlen($password) < 6) {
-		header("Location: users/create.php?error=password_short");
+		header("Location: " . BASE_URL . "users/create.php?error=password_short");
 		exit;
 	}
 	if (getUserByUsername($pdo, $username)) {
-		header("Location: users/create.php?error=username_exists");
+		header("Location: " . BASE_URL . "users/create.php?error=username_exists");
 		exit;
 	}
 	if (getUserByEmail($pdo, $email)) {
-		header("Location: users/create.php?error=email_exists");
+		header("Location: " . BASE_URL . "users/create.php?error=email_exists");
 		exit;
 	}
 	if ($shopId !== null && !getRamenShopByID($pdo, $shopId)) {
-		header("Location: users/create.php?error=invalid_shop");
+		header("Location: " . BASE_URL . "users/create.php?error=invalid_shop");
 		exit;
 	}
 	
@@ -338,16 +338,16 @@ if (isset($_POST['createUserBtn'])) {
 			'shop_id' => $shopId,
 			'is_active' => 1
 		]);
-		header("Location: users/index.php?created=1");
+		header("Location: " . BASE_URL . "users/index.php?created=1");
 		exit;
 	}
-	header("Location: users/create.php?error=create_failed");
+	header("Location: " . BASE_URL . "users/create.php?error=create_failed");
 	exit;
 }
 
 if (isset($_POST['updateUserBtn'])) {
 	if (!isAdmin($pdo)) {
-		header("Location: index.php?error=forbidden");
+		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
@@ -355,7 +355,7 @@ if (isset($_POST['updateUserBtn'])) {
 	$oldUser = getUserByID($pdo, $id);
 	
 	if (!$oldUser) {
-		header("Location: users/index.php?error=not_found");
+		header("Location: " . BASE_URL . "users/index.php?error=not_found");
 		exit;
 	}
 	
@@ -366,25 +366,25 @@ if (isset($_POST['updateUserBtn'])) {
 	$isActive = isset($_POST['is_active']) ? 1 : 0;
 	
 	if (!in_array($role, ['admin', 'shop_owner', 'staff'], true)) {
-		header("Location: users/edit.php?id=" . urlencode($id) . "&error=invalid_role");
+		header("Location: " . BASE_URL . "users/edit.php?id=" . urlencode($id) . "&error=invalid_role");
 		exit;
 	}
 	if ($username === '' || $email === '') {
-		header("Location: users/edit.php?id=" . urlencode($id) . "&error=missing");
+		header("Location: " . BASE_URL . "users/edit.php?id=" . urlencode($id) . "&error=missing");
 		exit;
 	}
 	$existingUsername = getUserByUsername($pdo, $username);
 	if ($existingUsername && $existingUsername['id'] != $id) {
-		header("Location: users/edit.php?id=" . urlencode($id) . "&error=username_exists");
+		header("Location: " . BASE_URL . "users/edit.php?id=" . urlencode($id) . "&error=username_exists");
 		exit;
 	}
 	$existingEmail = getUserByEmail($pdo, $email);
 	if ($existingEmail && $existingEmail['id'] != $id) {
-		header("Location: users/edit.php?id=" . urlencode($id) . "&error=email_exists");
+		header("Location: " . BASE_URL . "users/edit.php?id=" . urlencode($id) . "&error=email_exists");
 		exit;
 	}
 	if ($shopId !== null && !getRamenShopByID($pdo, $shopId)) {
-		header("Location: users/edit.php?id=" . urlencode($id) . "&error=invalid_shop");
+		header("Location: " . BASE_URL . "users/edit.php?id=" . urlencode($id) . "&error=invalid_shop");
 		exit;
 	}
 	
@@ -406,23 +406,23 @@ if (isset($_POST['updateUserBtn'])) {
 			'shop_id' => $shopId,
 			'is_active' => $isActive
 		]);
-		header("Location: users/index.php?updated=1");
+		header("Location: " . BASE_URL . "users/index.php?updated=1");
 		exit;
 	}
-	header("Location: users/edit.php?id=" . urlencode($id) . "&error=update_failed");
+	header("Location: " . BASE_URL . "users/edit.php?id=" . urlencode($id) . "&error=update_failed");
 	exit;
 }
 
 if (isset($_POST['deleteUserBtn'])) {
 	if (!isAdmin($pdo)) {
-		header("Location: index.php?error=forbidden");
+		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
 	$id = $_GET['id'] ?? null;
 	
 	if ($id == $userId) {
-		header("Location: users/index.php?error=self_delete");
+		header("Location: " . BASE_URL . "users/index.php?error=self_delete");
 		exit;
 	}
 	
@@ -434,10 +434,10 @@ if (isset($_POST['deleteUserBtn'])) {
 			'email' => $oldUser['email'],
 			'role' => $oldUser['role']
 		], null);
-		header("Location: users/index.php?deleted=1");
+		header("Location: " . BASE_URL . "users/index.php?deleted=1");
 		exit;
 	}
-	header("Location: users/index.php?error=delete_failed");
+	header("Location: " . BASE_URL . "users/index.php?error=delete_failed");
 	exit;
 }
 

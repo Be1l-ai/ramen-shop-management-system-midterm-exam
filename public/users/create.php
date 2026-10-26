@@ -4,7 +4,7 @@ require_once __DIR__ . '/../../src/bootstrap.php';
 $user = requireAuth($pdo);
 
 if (!isAdmin($pdo)) {
-    header("Location: ../index.php");
+    header("Location: " . BASE_URL . "index.php");
     exit;
 }
 

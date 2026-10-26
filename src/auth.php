@@ -44,7 +44,7 @@ function login($pdo, $username, $password) {
 function logout() {
     startSession();
     session_destroy();
-    header("Location: login.php");
+    header("Location: " . BASE_URL . "login.php");
     exit;
 }
 
@@ -63,7 +63,7 @@ function getCurrentUser($pdo) {
 function requireAuth($pdo) {
     $user = getCurrentUser($pdo);
     if (!$user) {
-        header("Location: login.php");
+        header("Location: " . BASE_URL . "login.php");
         exit;
     }
     return $user;
