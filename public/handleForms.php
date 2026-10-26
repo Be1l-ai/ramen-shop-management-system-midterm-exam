@@ -1,6 +1,6 @@
 <?php 
 
-require_once __DIR__ . '/src/bootstrap.php';
+require_once __DIR__ . '/../src/bootstrap.php';
 
 // Handle login/logout/public register FIRST (before auth check)
 if (isset($_POST['loginBtn'])) {
