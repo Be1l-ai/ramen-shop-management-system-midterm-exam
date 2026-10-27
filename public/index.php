@@ -112,7 +112,7 @@ $navUser = $user;
                     <?php else: ?>
                         <p>View only &mdash; you do not have management access to this shop.</p>
                     <?php endif; ?>
-                    <?php if ($isAdminUser): ?>
+                    <?php if ($canManageSelected): ?>
                         <a href="menu/trash.php?shop_id=<?php echo $selectedShop['id']; ?>" class="btn btn-secondary">Menu Trash</a>
                     <?php endif; ?>
                 </div>

@@ -23,7 +23,7 @@ $success = isset($_GET['success']);
     <title>Create Owner Account - Ramen Shop Management</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body class="guest">
     <div class="container" style="max-width: 500px; margin-top: 60px;">
         <h1>Create Owner Account</h1>
         

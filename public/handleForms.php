@@ -259,15 +259,20 @@ if (isset($_POST['restoreShopBtn'])) {
 }
 
 if (isset($_POST['restoreMenuItemBtn'])) {
-	if (!isAdmin($pdo)) {
+	$id = $_GET['id'] ?? null;
+	$item = getMenuItemByIDWithDeleted($pdo, $id);
+	
+	if (!$item) {
+		header("Location: " . BASE_URL . "index.php?error=not_found");
+		exit;
+	}
+	
+	if (!isAdmin($pdo) && !canManageShop($pdo, $item['shop_id'])) {
 		header("Location: " . BASE_URL . "index.php?error=forbidden");
 		exit;
 	}
 	
-	$id = $_GET['id'] ?? null;
-	$item = getMenuItemByIDWithDeleted($pdo, $id);
-	
-	if ($item && restoreMenuItem($pdo, $id, $userId)) {
+	if (restoreMenuItem($pdo, $id, $userId)) {
 		logAudit($pdo, $userId, 'restore', 'menu_items', $id, null, [
 			'name' => $item['name'],
 			'description' => $item['description'],
@@ -277,7 +282,7 @@ if (isset($_POST['restoreMenuItemBtn'])) {
 		header("Location: " . BASE_URL . "menu/trash.php?shop_id=" . $item['shop_id']);
 		exit;
 	}
-	header("Location: " . BASE_URL . "menu/trash.php?error=restore_failed");
+	header("Location: " . BASE_URL . "menu/trash.php?shop_id=" . $item['shop_id'] . "&error=restore_failed");
 	exit;
 }
 

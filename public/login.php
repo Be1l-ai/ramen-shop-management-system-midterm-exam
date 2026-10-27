@@ -22,7 +22,7 @@ $error = isset($_GET['error']) && isset($errorMessages[$_GET['error']]) ? $error
     <title>Login - Ramen Shop Management</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body class="guest">
     <div class="container" style="max-width: 400px; margin-top: 100px;">
         <h1>Login</h1>
         
@@ -42,7 +42,7 @@ $error = isset($_GET['error']) && isset($errorMessages[$_GET['error']]) ? $error
             </div>
         </form>
         
-        <p>No account yet? <a href="register.php">Create owner account</a> &mdash; shop owner registrations need administrator approval before they can log in.</p>
+        <p><a href="register.php">Create owner account</a> &mdash; shop owner registrations need administrator approval before they can log in.</p>
         
         <div class="login-demo">
             <p>Demo accounts:</p>

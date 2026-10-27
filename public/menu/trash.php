@@ -3,16 +3,16 @@ require_once __DIR__ . '/../../src/bootstrap.php';
 
 $user = requireAuth($pdo);
 
-if (!isAdmin($pdo)) {
-    header("Location: " . BASE_URL . "index.php");
-    exit;
-}
-
 $shopId = $_GET['shop_id'] ?? null;
 $shop = $shopId ? getRamenShopByID($pdo, $shopId) : null;
 
 if ($shopId && !$shop) {
     header("Location: " . BASE_URL . "index.php");
+    exit;
+}
+
+if (!isAdmin($pdo) && (!$shopId || !canManageShop($pdo, $shopId))) {
+    header("Location: " . BASE_URL . "index.php?error=forbidden");
     exit;
 }
 
@@ -24,7 +24,7 @@ $errorMessages = [
 $error = isset($_GET['error']) && isset($errorMessages[$_GET['error']]) ? $errorMessages[$_GET['error']] : null;
 
 $navBase = '../';
-$navActive = 'dashboard';
+$navActive = 'menu_trash';
 $navUser = $user;
 ?>
 <!DOCTYPE html>
