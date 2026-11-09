@@ -16,7 +16,10 @@ if ($user['role'] === 'admin') {
     $shops = $stmt->fetchAll();
 }
 
-$selectedShopId = isset($_GET['shop_id']) && $_GET['shop_id'] !== '' ? $_GET['shop_id'] : ($shops ? $shops[0]['id'] : null);
+$selectedShopId = isset($_GET['shop_id']) && $_GET['shop_id'] !== '' ? $_GET['shop_id'] : null;
+if (!$selectedShopId && !empty($shops)) {
+    $selectedShopId = $shops[0]['id'];
+}
 $selectedShop = null;
 
 foreach ($shops as $shop) {
@@ -91,7 +94,7 @@ $navUser = $user;
                         <option value="">-- Select Shop --</option>
                         <?php foreach ($shops as $shop): ?>
                             <option value="<?php echo $shop['id']; ?>" <?php echo $selectedShop && $selectedShop['id'] == $shop['id'] ? 'selected' : ''; ?>>
-                                <?php echo $shop['name']; ?>
+                                <?php echo xss_escape($shop['name']); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -99,8 +102,8 @@ $navUser = $user;
             </form>
             
             <?php if ($selectedShop): ?>
-                <h2><?php echo $selectedShop['name']; ?></h2>
-                <p><?php echo $selectedShop['description']; ?></p>
+                <h2><?php echo xss_escape($selectedShop['name']); ?></h2>
+                <p><?php echo xss_escape($selectedShop['description']); ?></p>
                 <p><small>Created: <?php echo $selectedShop['created_at']; ?> | Updated: <?php echo $selectedShop['updated_at'] ?? 'Never'; ?></small></p>
                 <hr>
                 

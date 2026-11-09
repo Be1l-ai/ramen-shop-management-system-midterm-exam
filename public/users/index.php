@@ -68,8 +68,8 @@ $navUser = $user;
                 <?php foreach ($users as $u): ?>
                 <tr <?php echo !$u['is_active'] ? 'class="inactive"' : ''; ?>>
                     <td><?php echo $u['id']; ?></td>
-                    <td><?php echo $u['username']; ?></td>
-                    <td><?php echo $u['email']; ?></td>
+                    <td><?php echo xss_escape($u['username']); ?></td>
+                    <td><?php echo xss_escape($u['email']); ?></td>
                     <td><span class="badge badge-<?php echo $u['role']; ?>"><?php echo ucfirst(str_replace('_', ' ', $u['role'])); ?></span></td>
                     <td><?php echo $u['shop_id'] ?? 'N/A'; ?></td>
                     <td><?php echo $u['is_active'] ? 'Active' : 'Inactive'; ?></td>

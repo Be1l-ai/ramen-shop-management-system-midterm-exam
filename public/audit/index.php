@@ -72,12 +72,12 @@ $navUser = $user;
                 <?php foreach ($logs as $log): ?>
                 <tr>
                     <td><?php echo $log['id']; ?></td>
-                    <td><?php echo $log['username']; ?></td>
+                    <td><?php echo xss_escape($log['username']); ?></td>
                     <td class="action-<?php echo $log['action']; ?>"><?php echo ucfirst($log['action']); ?></td>
                     <td><?php echo ucfirst(str_replace('_', ' ', $log['table_name'])); ?></td>
                     <td><?php echo $log['record_id']; ?></td>
-                    <td><pre class="json"><?php echo $log['old_values'] ? json_encode(json_decode($log['old_values']), JSON_PRETTY_PRINT) : '-'; ?></pre></td>
-                    <td><pre class="json"><?php echo $log['new_values'] ? json_encode(json_decode($log['new_values']), JSON_PRETTY_PRINT) : '-'; ?></pre></td>
+                    <td><pre class="json"><?php echo $log['old_values'] ? xss_escape(json_encode(json_decode($log['old_values']), JSON_PRETTY_PRINT)) : '-'; ?></pre></td>
+                    <td><pre class="json"><?php echo $log['new_values'] ? xss_escape(json_encode(json_decode($log['new_values']), JSON_PRETTY_PRINT)) : '-'; ?></pre></td>
                     <td><?php echo $log['created_at']; ?></td>
                 </tr>
                 <?php endforeach; ?>

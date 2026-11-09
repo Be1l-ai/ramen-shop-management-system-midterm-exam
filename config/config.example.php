@@ -4,5 +4,6 @@ return [
     'db_name' => 'ramen_shop_db',
     'db_user' => 'root',
     'db_pass' => '',
-    'db_charset' => 'utf8mb4'
+    'db_charset' => 'utf8mb4',
+    'xss_protection' => 'max'
 ];

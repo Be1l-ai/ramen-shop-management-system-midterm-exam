@@ -6,7 +6,7 @@ startSession();
 $errorMessages = [
     'missing' => 'Please fill in every required field.',
     'password_mismatch' => 'The passwords do not match.',
-    'password_short' => 'The password must be at least 6 characters long.',
+    'password_short' => 'The password must be at least 8 characters long and include at least one number, one uppercase, and one lowercase letter.',
     'username_exists' => 'That username is already taken.',
     'email_exists' => 'An account with that email already exists.',
     'registration_failed' => 'Registration failed. Please try again.'
@@ -50,12 +50,12 @@ $success = isset($_GET['success']);
                 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required minlength="6">
+                    <input type="password" id="password" name="password" required minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
                 </div>
                 
                 <div class="form-group">
                     <label for="confirm_password">Confirm Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
+                    <input type="password" id="confirm_password" name="confirm_password" required minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
                 </div>
                 
                 <div class="form-group">

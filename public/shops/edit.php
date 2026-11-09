@@ -45,11 +45,11 @@ $navUser = $user;
         <form action="../handleForms.php?id=<?php echo $id; ?>" method="POST">
             <div class="form-group">
                 <label for="name">Name</label>
-                <input type="text" id="name" name="name" value="<?php echo $shop['name']; ?>" required>
+                <input type="text" id="name" name="name" value="<?php echo xss_escape($shop['name']); ?>" required>
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
-                <textarea id="description" name="description" rows="4" cols="50"><?php echo $shop['description']; ?></textarea>
+                <textarea id="description" name="description" rows="4" cols="50"><?php echo xss_escape($shop['description']); ?></textarea>
             </div>
             <div class="form-group">
                 <input type="submit" name="updateShopBtn" value="Update Shop" class="btn">

@@ -57,12 +57,12 @@ $navUser = $user;
         <form action="../handleForms.php?id=<?php echo $id; ?>" method="POST">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" value="<?php echo $targetUser['username']; ?>" required>
+                <input type="text" id="username" name="username" value="<?php echo xss_escape($targetUser['username']); ?>" required>
             </div>
             
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="<?php echo $targetUser['email']; ?>" required>
+                <input type="email" id="email" name="email" value="<?php echo xss_escape($targetUser['email']); ?>" required>
             </div>
             
             <div class="form-group">

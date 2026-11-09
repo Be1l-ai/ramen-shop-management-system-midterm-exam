@@ -31,7 +31,7 @@ if (isset($_POST['publicRegisterBtn'])) {
 		header("Location: " . BASE_URL . "register.php?error=password_mismatch");
 		exit;
 	}
-	if (strlen($password) < 6) {
+	if (strlen($password) < 8 || !preg_match('/\d/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[A-Z]/', $password)) {
 		header("Location: " . BASE_URL . "register.php?error=password_short");
 		exit;
 	}
@@ -311,7 +311,7 @@ if (isset($_POST['createUserBtn'])) {
 		header("Location: " . BASE_URL . "users/create.php?error=password_mismatch");
 		exit;
 	}
-	if (strlen($password) < 6) {
+	if (strlen($password) < 8 || !preg_match('/\d/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[A-Z]/', $password)) {
 		header("Location: " . BASE_URL . "users/create.php?error=password_short");
 		exit;
 	}

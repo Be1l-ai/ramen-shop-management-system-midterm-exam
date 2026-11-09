@@ -42,7 +42,7 @@ function insertRamenShop($pdo, $name, $description, $userId) {
 }
 
 function updateRamenShop($pdo, $name, $description, $id, $userId) {
-	$sql = "UPDATE ramen_shops SET name = ?, description = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL";
+	$sql = "UPDATE ramen_shops SET name = ?, description = ?, updated_by = ? WHERE id = ? AND deleted_at IS NULL";
 	$stmt = $pdo->prepare($sql);
 	$executeQuery = $stmt->execute([$name, $description, $userId, $id]);
 

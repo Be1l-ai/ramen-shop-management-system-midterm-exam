@@ -1,6 +1,10 @@
 <?php
 $config = require __DIR__ . '/config.php';
 
+if (!isset($config['xss_protection'])) {
+    $config['xss_protection'] = 'on';
+}
+
 $dsn = "mysql:host={$config['db_host']};dbname={$config['db_name']};charset={$config['db_charset']}";
 $options = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
