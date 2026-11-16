@@ -10,10 +10,15 @@ if ($user['role'] === 'admin') {
     $stmt->execute();
     $shops = $stmt->fetchAll();
 } else {
-    $sql = "SELECT * FROM ramen_shops WHERE deleted_at IS NULL AND (created_by = ? OR updated_by = ? OR id = ?) ORDER BY id";
+    $sql = "SELECT * FROM ramen_shops WHERE deleted_at IS NULL AND (created_by = ? OR last_updated_by = ? OR id = ?) ORDER BY id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$user['id'], $user['id'], $user['shop_id']]);
     $shops = $stmt->fetchAll();
+}
+
+$shopSearchTerm = isset($_GET['search_shop']) ? trim($_GET['search_shop'] ?? '') : '';
+if ($shopSearchTerm !== '') {
+    $shops = searchRamenShops($pdo, $shopSearchTerm, $user['id'], $user['role'], $user['shop_id'] ?? null);
 }
 
 $selectedShopId = isset($_GET['shop_id']) && $_GET['shop_id'] !== '' ? $_GET['shop_id'] : ($shops ? $shops[0]['id'] : null);
@@ -26,7 +31,8 @@ foreach ($shops as $shop) {
     }
 }
 
-$menuItems = $selectedShop ? getMenuItemsByShop($pdo, $selectedShop['id']) : [];
+$menuSearchTerm = isset($_GET['search_menu']) ? trim($_GET['search_menu'] ?? '') : '';
+$menuItems = $selectedShop ? ($menuSearchTerm !== '' ? searchMenuItems($pdo, $selectedShop['id'], $menuSearchTerm) : getMenuItemsByShop($pdo, $selectedShop['id'])) : [];
 
 $isAdminUser = $user['role'] === 'admin';
 $canCreateShopAllowed = canCreateShop($pdo);
@@ -75,6 +81,16 @@ $navUser = $user;
             <?php endif; ?>
         </div>
         
+        <form method="GET" class="shop-selector" style="margin-bottom: 15px;">
+            <label>Search Shop: 
+                <input type="text" name="search_shop" placeholder="Search shop by name or description" value="<?php echo htmlspecialchars($shopSearchTerm ?? ''); ?>">
+                <input type="submit" value="Search" class="btn">
+                <?php if ($shopSearchTerm !== ''): ?>
+                    <a href="index.php" class="btn btn-secondary">Clear</a>
+                <?php endif; ?>
+            </label>
+        </form>
+        
         <?php if (empty($shops)): ?>
             <?php if ($canCreateShopAllowed): ?>
                 <p>No Ramen Shop found yet.</p>
@@ -101,7 +117,7 @@ $navUser = $user;
             <?php if ($selectedShop): ?>
                 <h2><?php echo $selectedShop['name']; ?></h2>
                 <p><?php echo $selectedShop['description']; ?></p>
-                <p><small>Created: <?php echo $selectedShop['created_at']; ?> | Updated: <?php echo $selectedShop['updated_at'] ?? 'Never'; ?></small></p>
+                <p><small>Date Added: <?php echo $selectedShop['date_added']; ?> | Last Updated: <?php echo $selectedShop['last_updated'] ?? 'Never'; ?> | Last Updated By: <?php echo $selectedShop['last_updated_by'] ?? 'Never'; ?></small></p>
                 <hr>
                 
                 <div style="margin-bottom: 15px;">
@@ -120,6 +136,17 @@ $navUser = $user;
                 
                 <h2>Menu Items</h2>
                 
+                <form method="GET" class="shop-selector" style="margin-bottom: 10px;">
+                    <input type="hidden" name="shop_id" value="<?php echo $selectedShop['id']; ?>">
+                    <label>Search Menu Items: 
+                        <input type="text" name="search_menu" placeholder="Search menu item by name or description" value="<?php echo htmlspecialchars($menuSearchTerm ?? ''); ?>">
+                        <input type="submit" value="Search" class="btn">
+                        <?php if ($menuSearchTerm !== ''): ?>
+                            <a href="index.php?shop_id=<?php echo $selectedShop['id']; ?>" class="btn btn-secondary">Clear</a>
+                        <?php endif; ?>
+                    </label>
+                </form>
+                
                 <?php if (empty($menuItems)): ?>
                     <?php if ($canManageSelected): ?>
                         <p>No menu items yet. <a href="menu/create.php?shop_id=<?php echo $selectedShop['id']; ?>" class="btn">Add Menu Item</a></p>
@@ -134,8 +161,9 @@ $navUser = $user;
                             <th>Description</th>
                             <th>Price</th>
                             <th>Available</th>
-                            <th>Created</th>
-                            <th>Updated</th>
+                            <th>Date Added</th>
+                            <th>Last Updated</th>
+                            <th>Last Updated By</th>
                             <th>Actions</th>
                         </tr>
                         <?php foreach ($menuItems as $item): ?>
@@ -145,8 +173,9 @@ $navUser = $user;
                             <td><?php echo $item['description']; ?></td>
                             <td>₱<?php echo number_format($item['price'], 2); ?></td>
                             <td><?php echo $item['is_available'] ? 'Yes' : 'No'; ?></td>
-                            <td><?php echo $item['created_at']; ?></td>
-                            <td><?php echo $item['updated_at'] ?? 'Never'; ?></td>
+                            <td><?php echo $item['date_added']; ?></td>
+                            <td><?php echo $item['last_updated'] ?? 'Never'; ?></td>
+                            <td><?php echo $item['last_updated_by'] ?? 'Never'; ?></td>
                             <td class="actions">
                                 <?php if ($canManageSelected): ?>
                                     <a href="menu/edit.php?id=<?php echo $item['id']; ?>">Edit</a> | 

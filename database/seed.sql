@@ -13,7 +13,7 @@ INSERT INTO `users` (`username`, `email`, `password_hash`, `role`, `shop_id`, `i
 SET @admin_id = LAST_INSERT_ID();
 
 -- Insert sample ramen shop
-INSERT INTO `ramen_shops` (`name`, `description`, `created_by`, `updated_by`) VALUES
+INSERT INTO `ramen_shops` (`name`, `description`, `created_by`, `last_updated_by`) VALUES
 ('Ichiraku Ramen', 'Authentic Japanese ramen since 2020. Specializing in tonkotsu and shoyu broths made fresh daily.', @admin_id, @admin_id);
 
 -- Get the shop ID (should be 1)
@@ -28,7 +28,7 @@ INSERT INTO `users` (`username`, `email`, `password_hash`, `role`, `shop_id`, `i
 ('staff', 'staff@ichiraku.com', '$2y$12$LG/dSRIAvWGafcsd1RNhuuf79J6vTUh.YcsL6UqEGotzm0RMMxV/2', 'staff', @shop_id, TRUE);
 
 -- Insert sample menu items
-INSERT INTO `menu_items` (`shop_id`, `name`, `description`, `price`, `is_available`, `created_by`, `updated_by`) VALUES
+INSERT INTO `menu_items` (`shop_id`, `name`, `description`, `price`, `is_available`, `created_by`, `last_updated_by`) VALUES
 (@shop_id, 'Tonkotsu Ramen', 'Rich pork bone broth, chashu, soft-boiled egg, green onions, nori', 180.00, TRUE, @admin_id, @admin_id),
 (@shop_id, 'Shoyu Ramen', 'Clear soy sauce broth, chashu, bamboo shoots, green onions, nori', 160.00, TRUE, @admin_id, @admin_id),
 (@shop_id, 'Miso Ramen', 'Hearty miso broth, corn, butter, bean sprouts, green onions', 170.00, TRUE, @admin_id, @admin_id),

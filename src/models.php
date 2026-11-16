@@ -31,7 +31,7 @@ function getRamenShopByIDWithDeleted($pdo, $id) {
 }
 
 function insertRamenShop($pdo, $name, $description, $userId) {
-	$sql = "INSERT INTO ramen_shops (name, description, created_by, updated_by) VALUES (?, ?, ?, ?)";
+	$sql = "INSERT INTO ramen_shops (name, description, created_by, last_updated_by) VALUES (?, ?, ?, ?)";
 	$stmt = $pdo->prepare($sql);
 	$executeQuery = $stmt->execute([$name, $description, $userId, $userId]);
 
@@ -42,7 +42,7 @@ function insertRamenShop($pdo, $name, $description, $userId) {
 }
 
 function updateRamenShop($pdo, $name, $description, $id, $userId) {
-	$sql = "UPDATE ramen_shops SET name = ?, description = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL";
+	$sql = "UPDATE ramen_shops SET name = ?, description = ?, last_updated_by = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL";
 	$stmt = $pdo->prepare($sql);
 	$executeQuery = $stmt->execute([$name, $description, $userId, $id]);
 
@@ -53,7 +53,7 @@ function updateRamenShop($pdo, $name, $description, $id, $userId) {
 }
 
 function deleteRamenShop($pdo, $id, $userId) {
-	$sql = "UPDATE ramen_shops SET deleted_at = CURRENT_TIMESTAMP, updated_by = ? WHERE id = ? AND deleted_at IS NULL";
+	$sql = "UPDATE ramen_shops SET deleted_at = CURRENT_TIMESTAMP, last_updated_by = ? WHERE id = ? AND deleted_at IS NULL";
 	$stmt = $pdo->prepare($sql);
 	$executeQuery = $stmt->execute([$userId, $id]);
 
@@ -64,7 +64,7 @@ function deleteRamenShop($pdo, $id, $userId) {
 }
 
 function restoreRamenShop($pdo, $id, $userId) {
-	$sql = "UPDATE ramen_shops SET deleted_at = NULL, updated_by = ? WHERE id = ?";
+	$sql = "UPDATE ramen_shops SET deleted_at = NULL, last_updated_by = ? WHERE id = ?";
 	$stmt = $pdo->prepare($sql);
 	$executeQuery = $stmt->execute([$userId, $id]);
 
@@ -105,7 +105,7 @@ function getMenuItemByIDWithDeleted($pdo, $id) {
 }
 
 function insertMenuItem($pdo, $shop_id, $name, $description, $price, $is_available, $userId) {
-	$sql = "INSERT INTO menu_items (shop_id, name, description, price, is_available, created_by, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	$sql = "INSERT INTO menu_items (shop_id, name, description, price, is_available, created_by, last_updated_by) VALUES (?, ?, ?, ?, ?, ?, ?)";
 	$stmt = $pdo->prepare($sql);
 	$executeQuery = $stmt->execute([$shop_id, $name, $description, $price, $is_available, $userId, $userId]);
 
@@ -116,7 +116,7 @@ function insertMenuItem($pdo, $shop_id, $name, $description, $price, $is_availab
 }
 
 function updateMenuItem($pdo, $name, $description, $price, $is_available, $id, $userId) {
-	$sql = "UPDATE menu_items SET name = ?, description = ?, price = ?, is_available = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL";
+	$sql = "UPDATE menu_items SET name = ?, description = ?, price = ?, is_available = ?, last_updated_by = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL";
 	$stmt = $pdo->prepare($sql);
 	$executeQuery = $stmt->execute([$name, $description, $price, $is_available, $userId, $id]);
 
@@ -127,7 +127,7 @@ function updateMenuItem($pdo, $name, $description, $price, $is_available, $id, $
 }
 
 function deleteMenuItem($pdo, $id, $userId) {
-	$sql = "UPDATE menu_items SET deleted_at = CURRENT_TIMESTAMP, updated_by = ? WHERE id = ? AND deleted_at IS NULL";
+	$sql = "UPDATE menu_items SET deleted_at = CURRENT_TIMESTAMP, last_updated_by = ? WHERE id = ? AND deleted_at IS NULL";
 	$stmt = $pdo->prepare($sql);
 	$executeQuery = $stmt->execute([$userId, $id]);
 
@@ -138,7 +138,7 @@ function deleteMenuItem($pdo, $id, $userId) {
 }
 
 function restoreMenuItem($pdo, $id, $userId) {
-	$sql = "UPDATE menu_items SET deleted_at = NULL, updated_by = ? WHERE id = ?";
+	$sql = "UPDATE menu_items SET deleted_at = NULL, last_updated_by = ? WHERE id = ?";
 	$stmt = $pdo->prepare($sql);
 	$executeQuery = $stmt->execute([$userId, $id]);
 
@@ -257,6 +257,28 @@ function deleteUser($pdo, $id) {
 		return true;
 	}
 	return false;
+}
+
+function searchRamenShops($pdo, $term, $userId, $role, $userShopId) {
+	$like = "%" . $term . "%";
+	if ($role === 'admin') {
+		$sql = "SELECT * FROM ramen_shops WHERE deleted_at IS NULL AND (name LIKE ? OR description LIKE ?) ORDER BY id";
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute([$like, $like]);
+	} else {
+		$sql = "SELECT * FROM ramen_shops WHERE deleted_at IS NULL AND (name LIKE ? OR description LIKE ?) AND (created_by = ? OR last_updated_by = ? OR id = ?) ORDER BY id";
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute([$like, $like, $userId, $userId, $userShopId]);
+	}
+	return $stmt->fetchAll();
+}
+
+function searchMenuItems($pdo, $shop_id, $term) {
+	$like = "%" . $term . "%";
+	$sql = "SELECT * FROM menu_items WHERE shop_id = ? AND deleted_at IS NULL AND (name LIKE ? OR description LIKE ?) ORDER BY id";
+	$stmt = $pdo->prepare($sql);
+	$stmt->execute([$shop_id, $like, $like]);
+	return $stmt->fetchAll();
 }
 
 ?>

@@ -8,9 +8,10 @@ CREATE TABLE `ramen_shops` (
     `name` VARCHAR(100) NOT NULL,
     `description` TEXT,
     `created_by` INT NULL,
-    `updated_by` INT NULL,
+    `last_updated_by` INT NULL,
     `deleted_at` TIMESTAMP NULL,
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    `date_added` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `last_updated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Users Table
@@ -31,7 +32,7 @@ CREATE TABLE `users` (
 -- Add FKs to ramen_shops after users table exists
 ALTER TABLE `ramen_shops` 
     ADD FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL,
-    ADD FOREIGN KEY (`updated_by`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+    ADD FOREIGN KEY (`last_updated_by`) REFERENCES `users`(`id`) ON DELETE SET NULL;
 
 -- Child Table: Menu Items
 CREATE TABLE `menu_items` (
@@ -42,12 +43,13 @@ CREATE TABLE `menu_items` (
     `price` DECIMAL(10,2) NOT NULL,
     `is_available` BOOLEAN DEFAULT TRUE,
     `created_by` INT NULL,
-    `updated_by` INT NULL,
+    `last_updated_by` INT NULL,
     `deleted_at` TIMESTAMP NULL,
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `date_added` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `last_updated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`shop_id`) REFERENCES `ramen_shops`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL,
-    FOREIGN KEY (`updated_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
+    FOREIGN KEY (`last_updated_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
 );
 
 -- Audit Logs Table
